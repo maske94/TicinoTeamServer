@@ -1,8 +1,7 @@
-// grab the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// create a schema
+// create the user schema
 var userSchema = new Schema({
     firstName: String,
     lastName: String,
