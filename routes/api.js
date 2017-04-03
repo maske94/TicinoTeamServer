@@ -6,6 +6,11 @@ router.post('/addUser', function(req, res, next) {
     queryManager.addUser(req,res);
 });
 
+
+router.post('/addChild', function(req, res, next) {
+    queryManager.addChild(req,res);
+});
+
 router.post('/addEvent', function(req, res, next) {
     queryManager.addEvent(req,res);
 });

@@ -1,15 +1,23 @@
-require('../mongodb/connection');
+var mongoose = require('../mongodb/connection');
 var User = require('../model/user');
 var Event = require('../model/event');
+var childSchema = require('../model/child');
+var Child = mongoose.model('Child', childSchema);
 
 exports.addUser = function (req, res) {
 
-    // Check if username field exists
-    if(req.body.username===undefined || req.body.username === '') {
+    // Fields validation
+    if (req.body.username === undefined || req.body.username === '') {
         buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
         return;
     }
 
+    if (req.body.password === undefined || req.body.password === '') {
+        buildAndSendRes(res, null, null, 'Missed mandatory \'password\' field in the request');
+        return;
+    }
+
+    // New user creation
     var user = new User({
         username: req.body.username,
         password: req.body.password,
@@ -20,19 +28,63 @@ exports.addUser = function (req, res) {
     });
 
     // Save the user into mongoDB.
-    // Mongoose understands automatically that the collection is "users".
+    // Mongoose understands automatically that the collection is "users" from the word 'user'.
     // It returns a promise.
     user.save().then(function (doc) {
         console.log('User \'' + req.body.username + '\' added successfully!');
-        buildAndSendRes(res,doc,'User added successfully');
+        buildAndSendRes(res, doc, 'User added successfully');
     }).catch(function (err) {
         console.error(err);
-        if(err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
-            buildAndSendRes(res,null,null,'Username already exists');
+        if (err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
+            buildAndSendRes(res, null, null, 'Username already exists');
         else
-            buildAndSendRes(res,null,null,err);
+            buildAndSendRes(res, null, null, err);
     });
 };
+
+exports.addChild = function (req, res) {
+
+    // Check if the parent username is present in the request
+    if (req.body.username === undefined) {
+        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
+        return;
+    }
+
+    User.findOne({username: req.body.username}, function (err, user) {
+
+        if (err) {
+            buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If given parent username does not exist
+        if (user === null) {
+            buildAndSendRes(res, null, null, 'The given username does not exist');
+            return;
+        }
+
+        // Everything ok, can add new child
+        var child = new Child({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            birthDate: req.body.birthDate
+        });
+
+        // Add child to the parent
+        user.children.push(child);
+
+        // Save parent object into mongoDb
+        user.save().then(function (doc) {
+            console.log('Added child to \'' + req.body.username + '\' successfully!');
+            buildAndSendRes(res, doc, 'Child added successfully to the parent \'' + req.body.username + '\' ');
+        }).catch(function (err) {
+            console.error(err);
+            buildAndSendRes(res, null, null, err);
+        });
+
+    });
+};
+
 
 exports.addEvent = function (req, res) {
 
@@ -60,7 +112,7 @@ exports.addEvent = function (req, res) {
 
 function buildAndSendRes(res, body, msg, error) {
     var jsonRes = {};
-    if(error)
+    if (error)
         jsonRes.error = error;
     else {
         jsonRes.body = body;
