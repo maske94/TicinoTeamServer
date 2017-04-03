@@ -1,14 +1,17 @@
 var mongoose = require('mongoose');
+var child = require('./child');
+
 var Schema = mongoose.Schema;
 
 // create the user schema
 var userSchema = new Schema({
-    firstName: String,
-    lastName: String,
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    firstName: String,
+    lastName: String,
+    birthDate: Date,
     city: String,
-    birthDate: Date
+    children: [child]
 });
 
 // Create a model using the schema
