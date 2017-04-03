@@ -4,6 +4,12 @@ var Event = require('../model/event');
 
 exports.addUser = function (req, res) {
 
+    // Check if username field exists
+    if(req.body.username===undefined || req.body.username === '') {
+        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
+        return;
+    }
+
     var user = new User({
         username: req.body.username,
         password: req.body.password,
@@ -20,11 +26,11 @@ exports.addUser = function (req, res) {
         console.log('User \'' + req.body.username + '\' added successfully!');
         buildAndSendRes(res,doc,'User added successfully');
     }).catch(function (err) {
-        console.error(err.errmsg);
-        if(err.code == '11000')
+        console.error(err);
+        if(err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
             buildAndSendRes(res,null,null,'Username already exists');
         else
-            buildAndSendRes(res,null,null,err.errmsg);
+            buildAndSendRes(res,null,null,err);
     });
 };
 
