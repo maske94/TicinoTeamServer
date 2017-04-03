@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var childSchema = new Schema({
-    child_id: { type: String, required: true, unique: true },
+    child_id: String ,
     firstName: String,
     lastName: String,
     birthDate: Date

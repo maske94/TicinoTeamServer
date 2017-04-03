@@ -18,10 +18,13 @@ exports.addUser = function (req, res) {
     // It returns a promise.
     user.save().then(function (doc) {
         console.log('User \'' + req.body.username + '\' added successfully!');
-        res.send('Add user:' + doc);
+        buildAndSendRes(res,doc,'User added successfully');
     }).catch(function (err) {
-        console.error(err.code);
-        res.send('Error:' + err);
+        console.error(err.errmsg);
+        if(err.code == '11000')
+            buildAndSendRes(res,null,null,'Username already exists');
+        else
+            buildAndSendRes(res,null,null,err.errmsg);
     });
 };
 
@@ -49,4 +52,14 @@ exports.addEvent = function (req, res) {
     });
 };
 
-
+function buildAndSendRes(res, body, msg, error) {
+    var jsonRes = {};
+    if(error)
+        jsonRes.error = error;
+    else {
+        jsonRes.body = body;
+        jsonRes.message = msg;
+    }
+    res.contentType('application/json');
+    res.send(JSON.stringify(jsonRes));
+}
