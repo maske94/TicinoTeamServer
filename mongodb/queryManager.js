@@ -110,6 +110,17 @@ exports.addEvent = function (req, res) {
     });
 };
 
+/**
+ * Build a json response with 3 standard optional fields:
+ * - error : is set if any error occurs with a description of it. If set no body or message filed is set.
+ * - body : if no error occurred, it contains the requested resource.
+ * - message : if no error occurred, it contains a successful message with a description of what has been done.
+ *
+ * @param res
+ * @param body The requested resource or a resource on which has been done an update/add/remove operation
+ * @param msg Description of the successful operation
+ * @param error Description of the error
+ */
 function buildAndSendRes(res, body, msg, error) {
     var jsonRes = {};
     if (error)
