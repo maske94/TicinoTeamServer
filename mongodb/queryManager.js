@@ -50,6 +50,11 @@ exports.addChild = function (req, res) {
         return;
     }
 
+    if (req.body.device_id === undefined || req.body.device_id === '') {
+        buildAndSendRes(res, null, null, 'Missed mandatory \'device_id\' field in the request');
+        return;
+    }
+
     User.findOne({username: req.body.username}, function (err, user) {
 
         if (err) {
@@ -63,9 +68,18 @@ exports.addChild = function (req, res) {
             return;
         }
 
+        // Check if device_id is not already used (meaning that that wearable device is already paired with a child)
+        var deviceAlreadyPaired = user.children.some(function (child) {
+            return child.device_id == req.body.device_id;
+        });
+        if (deviceAlreadyPaired) {
+            buildAndSendRes(res, null, null, 'The wearable device is already paired with a child');
+            return;
+        }
+
         // Everything ok, can add new child
         var child = new Child({
-            device_id : req.body.device_id,
+            device_id: req.body.device_id,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             birthDate: req.body.birthDate
