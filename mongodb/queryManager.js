@@ -65,6 +65,7 @@ exports.addChild = function (req, res) {
 
         // Everything ok, can add new child
         var child = new Child({
+            device_id : req.body.device_id,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             birthDate: req.body.birthDate
