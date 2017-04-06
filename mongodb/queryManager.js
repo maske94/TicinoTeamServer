@@ -50,7 +50,7 @@ exports.addChild = function (req, res) {
 
         // Check if device_id is not already used (meaning that that wearable device is already paired with a child)
         var deviceAlreadyPaired = user.children.some(function (child) {
-            return child.device_id == req.body.device_id;
+            return child.deviceId == req.body.deviceId;
         });
         if (deviceAlreadyPaired) {
             api.buildAndSendRes(res, null, null, 'The wearable device is already paired with a child');
@@ -59,7 +59,7 @@ exports.addChild = function (req, res) {
 
         // Everything ok, can add new child
         var child = new Child({
-            device_id: req.body.device_id,
+            deviceId: req.body.deviceId,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             birthDate: req.body.birthDate
@@ -83,25 +83,30 @@ exports.addChild = function (req, res) {
 
 exports.addEvent = function (req, res) {
 
+    //TODO Check if username and childId exist
+
     var event = new Event({
         username: req.body.username,
+        childId: req.body.childId,
         pollutionValue: req.body.pollutionValue,
-        timeStamp: req.body.timeStamp,
         gpsValue: {
             lat: req.body.gpsLat,
             long: req.body.gpsLong
-        }
+        },
+        timeStamp: req.body.timeStamp
+
     });
 
     // Save the new event into mongoDB.
     // Mongoose understands automatically that the collection is "events"
     // Mongoose returns a promise
     event.save().then(function (doc) {
-        console.log('Event added successfully!');
-        res.send('Add event:' + doc);
+        //console.log('Event added successfully!');
+        api.buildAndSendRes(res, doc, 'Event added successfully');
+
     }).catch(function (err) {
         console.error(err);
-        res.send('Error:' + err);
+        api.buildAndSendRes(res, null, null, err);
     });
 };
 
