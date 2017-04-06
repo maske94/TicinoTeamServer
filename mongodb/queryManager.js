@@ -2,20 +2,11 @@ var mongoose = require('../mongodb/connection');
 var User = require('../model/user');
 var Event = require('../model/event');
 var childSchema = require('../model/child');
+var api = require('../routes/api');
+
 var Child = mongoose.model('Child', childSchema);
 
 exports.addUser = function (req, res) {
-
-    // Fields validation
-    if (req.body.username === undefined || req.body.username === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
-        return;
-    }
-
-    if (req.body.password === undefined || req.body.password === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'password\' field in the request');
-        return;
-    }
 
     // New user creation
     var user = new User({
@@ -32,39 +23,28 @@ exports.addUser = function (req, res) {
     // It returns a promise.
     user.save().then(function (doc) {
         console.log('User \'' + req.body.username + '\' added successfully!');
-        buildAndSendRes(res, doc, 'User added successfully');
+        api.buildAndSendRes(res, doc, 'User added successfully');
     }).catch(function (err) {
         console.error(err);
         if (err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
-            buildAndSendRes(res, null, null, 'Username already exists');
+            api.buildAndSendRes(res, null, null, 'Username already exists');
         else
-            buildAndSendRes(res, null, null, err);
+            api.buildAndSendRes(res, null, null, err);
     });
 };
 
 exports.addChild = function (req, res) {
 
-    // Check if the parent username is present in the request
-    if (req.body.username === undefined) {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
-        return;
-    }
-
-    if (req.body.device_id === undefined || req.body.device_id === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'device_id\' field in the request');
-        return;
-    }
-
     User.findOne({username: req.body.username}, function (err, user) {
 
         if (err) {
-            buildAndSendRes(res, null, null, err);
+            api.buildAndSendRes(res, null, null, err);
             return;
         }
 
         // If given parent username does not exist
         if (user === null) {
-            buildAndSendRes(res, null, null, 'The given username does not exist');
+            api.buildAndSendRes(res, null, null, 'The given username does not exist');
             return;
         }
 
@@ -73,7 +53,7 @@ exports.addChild = function (req, res) {
             return child.device_id == req.body.device_id;
         });
         if (deviceAlreadyPaired) {
-            buildAndSendRes(res, null, null, 'The wearable device is already paired with a child');
+            api.buildAndSendRes(res, null, null, 'The wearable device is already paired with a child');
             return;
         }
 
@@ -91,10 +71,10 @@ exports.addChild = function (req, res) {
         // Save parent object into mongoDb
         user.save().then(function (doc) {
             console.log('Added child to \'' + req.body.username + '\' successfully!');
-            buildAndSendRes(res, doc, 'Child added successfully to the parent \'' + req.body.username + '\' ');
+            api.buildAndSendRes(res, doc, 'Child added successfully to the parent \'' + req.body.username + '\' ');
         }).catch(function (err) {
             console.error(err);
-            buildAndSendRes(res, null, null, err);
+            api.buildAndSendRes(res, null, null, err);
         });
 
     });
@@ -125,25 +105,4 @@ exports.addEvent = function (req, res) {
     });
 };
 
-/**
- * Build a json response with 3 standard optional fields:
- * - error : is set if any error occurs with a description of it. If set no body or message filed is set.
- * - body : if no error occurred, it contains the requested resource.
- * - message : if no error occurred, it contains a successful message with a description of what has been done.
- *
- * @param res
- * @param body The requested resource or a resource on which has been done an update/add/remove operation
- * @param msg Description of the successful operation
- * @param error Description of the error
- */
-function buildAndSendRes(res, body, msg, error) {
-    var jsonRes = {};
-    if (error)
-        jsonRes.error = error;
-    else {
-        jsonRes.body = body;
-        jsonRes.message = msg;
-    }
-    res.contentType('application/json');
-    res.send(JSON.stringify(jsonRes));
-}
+
