@@ -83,30 +83,53 @@ exports.addChild = function (req, res) {
 
 exports.addEvent = function (req, res) {
 
-    //TODO Check if username and childId exist
+    // TODO create a file config with all strings messages
 
-    var event = new Event({
-        username: req.body.username,
-        childId: req.body.childId,
-        pollutionValue: req.body.pollutionValue,
-        gpsValue: {
-            lat: req.body.gpsLat,
-            long: req.body.gpsLong
-        },
-        timeStamp: req.body.timeStamp
+    User.findOne({username: req.body.username},function (err,user) {
 
-    });
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
 
-    // Save the new event into mongoDB.
-    // Mongoose understands automatically that the collection is "events"
-    // Mongoose returns a promise
-    event.save().then(function (doc) {
-        //console.log('Event added successfully!');
-        api.buildAndSendRes(res, doc, 'Event added successfully');
+        // If given parent username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, 'The given username does not exist');
+            return;
+        }
 
-    }).catch(function (err) {
-        console.error(err);
-        api.buildAndSendRes(res, null, null, err);
+        // Check if childId is a child of the given parent
+        var childExists = user.children.some(function (child) {
+            return child._id == req.body.childId;
+        });
+        if (!childExists) {
+            api.buildAndSendRes(res, null, null, 'The given childId does not exist for parent \''+req.body.username+'\'');
+            return;
+        }
+
+        var event = new Event({
+            username: req.body.username,
+            childId: req.body.childId,
+            pollutionValue: req.body.pollutionValue,
+            gpsValue: {
+                lat: req.body.gpsLat,
+                long: req.body.gpsLong
+            },
+            timeStamp: req.body.timeStamp
+
+        });
+
+        // Save the new event into mongoDB.
+        // Mongoose understands automatically that the collection is "events"
+        // Mongoose returns a promise
+        event.save().then(function (doc) {
+            //console.log('Event added successfully!');
+            api.buildAndSendRes(res, doc, 'Event added successfully');
+
+        }).catch(function (err) {
+            console.error(err);
+            api.buildAndSendRes(res, null, null, err);
+        });
     });
 };
 
