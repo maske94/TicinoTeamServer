@@ -1,18 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var queryManager = require('../mongodb/queryManager');
-var check = require('validator');
+var validator = require('validator');
+var c = require('../constants');
 
 router.post('/addUser', function (req, res, next) {
 
     // Fields validation
     if (req.body.username === undefined || req.body.username === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
         return;
     }
 
     if (req.body.password === undefined || req.body.password === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'password\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_PASSWORD);
         return;
     }
 
@@ -24,12 +25,12 @@ router.post('/addChild', function (req, res, next) {
 
     // Fields validation
     if (req.body.username === undefined) {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
         return;
     }
 
     if (req.body.deviceId === undefined || req.body.deviceId === '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'deviceId\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_DEVICEID);
         return;
     }
 
@@ -40,37 +41,37 @@ router.post('/addEvent', function (req, res, next) {
 
     // Fields validation
     if (req.body.username === undefined) {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'username\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
         return;
     }
 
     if (req.body.childId === undefined || req.body.childId == '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'childId\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_CHILDID);
         return;
     }
 
     if (req.body.pollutionValue === undefined || req.body.pollutionValue == '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'pollutionValue\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_POLLVALUE);
         return;
     }
 
     if (req.body.gpsLat === undefined || req.body.gpsLat == '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'gpsLat\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_GPSLAT);
         return;
     }
 
     if (req.body.gpsLong === undefined || req.body.gpsLong == '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'gpsLong\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_GPSLONG);
         return;
     }
 
     if (req.body.timeStamp === undefined || req.body.timeStamp == '') {
-        buildAndSendRes(res, null, null, 'Missed mandatory \'timeStamp\' field in the request');
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_TIMESTAMP);
         return;
     }
 
-    if (!check.isISO8601(req.body.timeStamp)) {
-        buildAndSendRes(res, null, null, 'Filed \'timeStamp\' is not a valid ISO date format');
+    if (!validator.isISO8601(req.body.timeStamp)) {
+        buildAndSendRes(res, null, null, c.ERROR_INVALID_FIELD_TIMESTAMP);
         return;
     }
 

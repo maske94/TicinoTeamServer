@@ -3,6 +3,7 @@ var User = require('../model/user');
 var Event = require('../model/event');
 var childSchema = require('../model/child');
 var api = require('../routes/api');
+var c = require('../constants');
 
 var Child = mongoose.model('Child', childSchema);
 
@@ -11,7 +12,7 @@ exports.addUser = function (req, res) {
     // New user creation
     var user = new User({
         username: req.body.username,
-        password: req.body.password,
+        password: req.body.password,// TODO password must be encrypted
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         birthDate: req.body.birthDate,
@@ -23,11 +24,11 @@ exports.addUser = function (req, res) {
     // It returns a promise.
     user.save().then(function (doc) {
         console.log('User \'' + req.body.username + '\' added successfully!');
-        api.buildAndSendRes(res, doc, 'User added successfully');
+        api.buildAndSendRes(res, doc, c.SUCCESS_USER_ADDED);
     }).catch(function (err) {
-        console.error(err);
+        //console.error(err);
         if (err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
-            api.buildAndSendRes(res, null, null, 'Username already exists');
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_ALREADY_EXISTS);
         else
             api.buildAndSendRes(res, null, null, err);
     });
@@ -44,7 +45,7 @@ exports.addChild = function (req, res) {
 
         // If given parent username does not exist
         if (user === null) {
-            api.buildAndSendRes(res, null, null, 'The given username does not exist');
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
             return;
         }
 
@@ -53,7 +54,7 @@ exports.addChild = function (req, res) {
             return child.deviceId == req.body.deviceId;
         });
         if (deviceAlreadyPaired) {
-            api.buildAndSendRes(res, null, null, 'The wearable device is already paired with a child');
+            api.buildAndSendRes(res, null, null, c.ERROR_DEVICE_ALREADY_PAIRED);
             return;
         }
 
@@ -71,7 +72,7 @@ exports.addChild = function (req, res) {
         // Save parent object into mongoDb
         user.save().then(function (doc) {
             console.log('Added child to \'' + req.body.username + '\' successfully!');
-            api.buildAndSendRes(res, doc, 'Child added successfully to the parent \'' + req.body.username + '\' ');
+            api.buildAndSendRes(res, child, c.SUCCESS_CHILD_ADDED + req.body.username + '\' ');
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);
@@ -80,10 +81,7 @@ exports.addChild = function (req, res) {
     });
 };
 
-
 exports.addEvent = function (req, res) {
-
-    // TODO create a file config with all strings messages
 
     User.findOne({username: req.body.username},function (err,user) {
 
@@ -94,7 +92,7 @@ exports.addEvent = function (req, res) {
 
         // If given parent username does not exist
         if (user === null) {
-            api.buildAndSendRes(res, null, null, 'The given username does not exist');
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
             return;
         }
 
@@ -103,7 +101,7 @@ exports.addEvent = function (req, res) {
             return child._id == req.body.childId;
         });
         if (!childExists) {
-            api.buildAndSendRes(res, null, null, 'The given childId does not exist for parent \''+req.body.username+'\'');
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST+'\''+req.body.username+'\'');
             return;
         }
 
@@ -124,7 +122,7 @@ exports.addEvent = function (req, res) {
         // Mongoose returns a promise
         event.save().then(function (doc) {
             //console.log('Event added successfully!');
-            api.buildAndSendRes(res, doc, 'Event added successfully');
+            api.buildAndSendRes(res, doc, c.SUCCESS_EVENT_ADDED);
 
         }).catch(function (err) {
             console.error(err);
