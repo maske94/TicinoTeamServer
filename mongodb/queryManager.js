@@ -83,7 +83,7 @@ exports.addChild = function (req, res) {
 
 exports.addEvent = function (req, res) {
 
-    User.findOne({username: req.body.username},function (err,user) {
+    User.findOne({username: req.body.username}, function (err, user) {
 
         if (err) {
             api.buildAndSendRes(res, null, null, err);
@@ -101,7 +101,7 @@ exports.addEvent = function (req, res) {
             return child._id == req.body.childId;
         });
         if (!childExists) {
-            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST+'\''+req.body.username+'\'');
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.body.username + '\'');
             return;
         }
 
@@ -131,4 +131,32 @@ exports.addEvent = function (req, res) {
     });
 };
 
+exports.getChildInfo = function (req, res) {
+    User.findOne({username: req.query.username}, function (err, user) {
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If given parent username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
+            return;
+        }
+
+        // Check if childId is a child of the given parent
+        var searchedChild = user.children.find(function (child) {
+            return child._id == req.query.childId;
+
+        });
+        if (searchedChild === undefined) {
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.query.username + '\'');
+            return;
+        }
+
+        api.buildAndSendRes(res, searchedChild, c.SUCCESS_GENERAL, null);
+
+
+    });
+};
 

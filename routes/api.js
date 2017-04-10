@@ -20,7 +20,6 @@ router.post('/addUser', function (req, res, next) {
     queryManager.addUser(req, res);
 });
 
-
 router.post('/addChild', function (req, res, next) {
 
     // Fields validation
@@ -78,6 +77,27 @@ router.post('/addEvent', function (req, res, next) {
     queryManager.addEvent(req, res);
 });
 
+/**
+ * PATH: /api/getChild
+ * METHOD: GET
+ * PARAMS: username,childId
+ * RETURN: Information about the given childId
+ */
+router.get('/getChild', function (req, res, next) {
+
+    // Fields validation
+    if (req.query.username === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
+        return;
+    }
+
+    if (req.query.childId === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_CHILDID);
+        return;
+    }
+
+    queryManager.getChildInfo(req, res);
+});
 
 /**
  * Build a json response with 3 standard optional fields:

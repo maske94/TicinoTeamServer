@@ -17,6 +17,7 @@ module.exports = {
     ERROR_CHILDID_NOT_EXIST :  'The given childId does not exist for parent ',
 
     // Success messages
+    SUCCESS_GENERAL: 'Successful operation',
     SUCCESS_USER_ADDED : 'User added successfully',
     SUCCESS_EVENT_ADDED : 'Event added successfully',
     SUCCESS_CHILD_ADDED : 'Child added successfully to the parent '
