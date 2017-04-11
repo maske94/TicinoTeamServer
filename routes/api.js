@@ -100,6 +100,23 @@ router.get('/getChild', function (req, res, next) {
 });
 
 /**
+ * PATH: /api/getChildren
+ * METHOD: GET
+ * PARAMS: username
+ * RETURN: Information about all children of the given username
+ */
+router.get('/getChildren', function (req, res, next) {
+
+    // Fields validation
+    if (req.query.username === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
+        return;
+    }
+
+    queryManager.getChildren(req, res);
+});
+
+/**
  * Build a json response with 3 standard optional fields:
  * - error : is set if any error occurs with a description of it. If set no body or message filed is set.
  * - body : if no error occurred, it contains the requested resource.

@@ -160,3 +160,20 @@ exports.getChildInfo = function (req, res) {
     });
 };
 
+exports.getChildren = function (req,res) {
+    User.findOne({username: req.query.username}, function (err, user) {
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If given parent username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
+            return;
+        }
+
+        api.buildAndSendRes(res, user.children, c.SUCCESS_GENERAL, null);
+    });
+
+};
