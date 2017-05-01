@@ -12,10 +12,8 @@ var eventSchema = new Schema({
     username: {type: String, required: true},
     childId: {type: String, required: true},
     pollutionValue: {type: Number, required: true},
-    gpsValue: {
-        lat: {type: Number, required: true},
-        long: {type: Number, required: true}
-    },
+    gpsLat: {type: Number, required: true},
+    gpsLong: {type: Number, required: true},
     timeStamp: {type: String, required: true}
 });
 

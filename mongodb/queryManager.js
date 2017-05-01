@@ -27,10 +27,15 @@ exports.addUser = function (req, res) {
         api.buildAndSendRes(res, doc, c.SUCCESS_USER_ADDED);
     }).catch(function (err) {
         //console.error(err);
-        if (err.code == '11000')// 11000 is the mongoDB error code when there is a duplicate key
-            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_ALREADY_EXISTS);
-        else
-            api.buildAndSendRes(res, null, null, err);
+        api.buildAndSendRes(res, null, null, +err.code === 11000 ? c.ERROR_USERNAME_ALREADY_EXISTS : err);
+
+        // if (+err.code === 11000) {// 11000 is the mongoDB error code when there is a duplicate key
+        //     // con il + casto a intero
+        //     api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_ALREADY_EXISTS);
+        // }
+        // else {
+        //     api.buildAndSendRes(res, null, null, err);
+        // }
     });
 };
 
@@ -109,10 +114,8 @@ exports.addEvent = function (req, res) {
             username: req.body.username,
             childId: req.body.childId,
             pollutionValue: req.body.pollutionValue,
-            gpsValue: {
-                lat: req.body.gpsLat,
-                long: req.body.gpsLong
-            },
+            gpsLat: req.body.gpsLat,
+            gpsLong: req.body.gpsLong,
             timeStamp: req.body.timeStamp
 
         });
@@ -160,7 +163,7 @@ exports.getChildInfo = function (req, res) {
     });
 };
 
-exports.getChildren = function (req,res) {
+exports.getChildren = function (req, res) {
     User.findOne({username: req.query.username}, function (err, user) {
         if (err) {
             api.buildAndSendRes(res, null, null, err);

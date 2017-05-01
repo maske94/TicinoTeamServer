@@ -4,6 +4,12 @@ var queryManager = require('../mongodb/queryManager');
 var validator = require('validator');
 var c = require('../constants');
 
+/**
+ * PATH: /api/addUser
+ * METHOD: POST
+ * PARAMS: username,password,firstName,lastName,birthDate,city
+ * RETURN: The added user
+ */
 router.post('/addUser', function (req, res, next) {
 
     // Fields validation
@@ -20,6 +26,12 @@ router.post('/addUser', function (req, res, next) {
     queryManager.addUser(req, res);
 });
 
+/**
+ * PATH: /api/addChild
+ * METHOD: POST
+ * PARAMS: username,deviceId,firstName,lastName,birthDate
+ * RETURN: The added child
+ */
 router.post('/addChild', function (req, res, next) {
 
     // Fields validation
@@ -36,6 +48,12 @@ router.post('/addChild', function (req, res, next) {
     queryManager.addChild(req, res);
 });
 
+/**
+ * PATH: /api/addEvent
+ * METHOD: POST
+ * PARAMS: username,childId,pollutionValue,gpsLat,gpsLong,timeStamp
+ * RETURN: The added event
+ */
 router.post('/addEvent', function (req, res, next) {
 
     // Fields validation
@@ -119,7 +137,7 @@ router.get('/getChildren', function (req, res, next) {
 /**
  * Build a json response with 3 standard optional fields:
  * - error : is set if any error occurs with a description of it. If set no body or message filed is set.
- * - body : if no error occurred, it contains the requested resource.
+ * - body : if no error occurred, it contains the requested resource or the posted resource.
  * - message : if no error occurred, it contains a successful message with a description of what has been done.
  *
  * @param res Required
