@@ -23,6 +23,11 @@ router.post('/addUser', function (req, res, next) {
         return;
     }
 
+    if (!validator.isISO8601(req.body.birthDate)) {
+        buildAndSendRes(res, null, null, c.ERROR_INVALID_FIELD_BIRTHDATE);
+        return;
+    }
+
     queryManager.addUser(req, res);
 });
 

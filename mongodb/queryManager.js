@@ -27,15 +27,8 @@ exports.addUser = function (req, res) {
         api.buildAndSendRes(res, doc, c.SUCCESS_USER_ADDED);
     }).catch(function (err) {
         //console.error(err);
+        // 11000 is the mongoDB error code when there is a duplicate key, that means that the username already exists
         api.buildAndSendRes(res, null, null, +err.code === 11000 ? c.ERROR_USERNAME_ALREADY_EXISTS : err);
-
-        // if (+err.code === 11000) {// 11000 is the mongoDB error code when there is a duplicate key
-        //     // con il + casto a intero
-        //     api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_ALREADY_EXISTS);
-        // }
-        // else {
-        //     api.buildAndSendRes(res, null, null, err);
-        // }
     });
 };
 

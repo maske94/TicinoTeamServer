@@ -15,6 +15,7 @@ module.exports = {
     ERROR_USERNAME_NOT_EXIST :  'The given username does not exist',
     ERROR_DEVICE_ALREADY_PAIRED :  'The wearable device is already paired with a child',
     ERROR_CHILDID_NOT_EXIST :  'The given childId does not exist for parent ',
+    ERROR_INVALID_FIELD_BIRTHDATE :  'The given birthDate is not a valid date format',
 
     // Success messages
     SUCCESS_GENERAL: 'Successful operation',
