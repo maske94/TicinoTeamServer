@@ -143,10 +143,21 @@ router.get('/getChildren', function (req, res, next) {
  * PATH: /api/removeChild
  * METHOD: DELETE
  * PARAMS: username,childId
- * RETURN: //TODO
+ * RETURN: The deleted child
  */
-router.delete('/removeChild',function () {
-    //TODO implement
+router.delete('/removeChild',function (req, res, next) {
+    // Fields validation
+    if (req.body.username === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
+        return;
+    }
+
+    if (req.body.childId === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_CHILDID);
+        return;
+    }
+
+    queryManager.removeChild(req,res);
 });
 
 /**

@@ -173,3 +173,41 @@ exports.getChildren = function (req, res) {
     });
 
 };
+
+exports.removeChild = function (req, res) {
+    User.findOne({username: req.body.username}, function (err, user) {
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If given parent username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
+            return;
+        }
+
+        // Check if childId is a child of the given parent
+        var searchedChild = user.children.find(function (child) {
+            return child._id == req.body.childId;
+
+        });
+        if (searchedChild === undefined) {
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.body.username + '\'');
+            return;
+        }
+
+        // Remove child from parent
+        user.children.remove({_id: req.body.childId});
+
+        // Save parent object into mongoDb
+        user.save().then(function (doc) {
+            console.log('Removed child from \'' + req.body.username + '\' successfully!');
+            api.buildAndSendRes(res, searchedChild, c.SUCCESS_CHILD_REMOVED + req.body.username + '\' ');
+        }).catch(function (err) {
+            console.error(err);
+            api.buildAndSendRes(res, null, null, err);
+        });
+
+    })
+};
