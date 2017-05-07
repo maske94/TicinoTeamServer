@@ -140,6 +140,26 @@ router.get('/getChildren', function (req, res, next) {
 });
 
 /**
+ * PATH: /api/removeChild
+ * METHOD: DELETE
+ * PARAMS: username,childId
+ * RETURN: //TODO
+ */
+router.delete('/removeChild',function () {
+    //TODO implement
+});
+
+/**
+ * PATH: /api/removeUser
+ * METHOD: DELETE
+ * PARAMS: username
+ * RETURN: //TODO
+ */
+router.delete('/removeUser',function () {
+    //TODO implement
+});
+
+/**
  * Build a json response with 3 standard optional fields:
  * - error : is set if any error occurs with a description of it. If set no body or message filed is set.
  * - body : if no error occurred, it contains the requested resource or the posted resource.
