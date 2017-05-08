@@ -211,3 +211,22 @@ exports.removeChild = function (req, res) {
 
     })
 };
+
+exports.removeUser = function (req, res) {
+    User.findOneAndRemove({username: req.body.username}, function (err, user) {
+
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If the given username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
+            return;
+        }
+
+        api.buildAndSendRes(res, user, c.SUCCESS_USER_REMOVED);
+
+    })
+};

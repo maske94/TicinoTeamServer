@@ -146,6 +146,7 @@ router.get('/getChildren', function (req, res, next) {
  * RETURN: The deleted child
  */
 router.delete('/removeChild',function (req, res, next) {
+
     // Fields validation
     if (req.body.username === undefined) {
         buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
@@ -164,10 +165,17 @@ router.delete('/removeChild',function (req, res, next) {
  * PATH: /api/removeUser
  * METHOD: DELETE
  * PARAMS: username
- * RETURN: //TODO
+ * RETURN: The removed user
  */
-router.delete('/removeUser',function () {
-    //TODO implement
+router.delete('/removeUser',function (req, res, next) {
+
+    // Fields validation
+    if (req.body.username === undefined) {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
+        return;
+    }
+
+    queryManager.removeUser(req,res);
 });
 
 /**
