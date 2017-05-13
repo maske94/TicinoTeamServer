@@ -70,7 +70,7 @@ exports.addChild = function (req, res) {
         // Save parent object into mongoDb
         user.save().then(function (doc) {
             console.log('Added child to \'' + req.body.username + '\' successfully!');
-            api.buildAndSendRes(res, child, c.SUCCESS_CHILD_ADDED + req.body.username + '\' ');
+            api.buildAndSendRes(res, child, c.SUCCESS_CHILD_ADDED +'\'' +req.body.username + '\'');
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);
@@ -175,7 +175,7 @@ exports.getChildren = function (req, res) {
 };
 
 exports.removeChild = function (req, res) {
-    User.findOne({username: req.body.username}, function (err, user) {
+    User.findOne({username: req.query.username}, function (err, user) {
         if (err) {
             api.buildAndSendRes(res, null, null, err);
             return;
@@ -189,21 +189,21 @@ exports.removeChild = function (req, res) {
 
         // Check if childId is a child of the given parent
         var searchedChild = user.children.find(function (child) {
-            return child._id == req.body.childId;
+            return child._id == req.query.childId;
 
         });
         if (searchedChild === undefined) {
-            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.body.username + '\'');
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.query.username + '\'');
             return;
         }
 
         // Remove child from parent
-        user.children.remove({_id: req.body.childId});
+        user.children.remove({_id: req.query.childId});
 
         // Save parent object into mongoDb
         user.save().then(function (doc) {
-            console.log('Removed child from \'' + req.body.username + '\' successfully!');
-            api.buildAndSendRes(res, searchedChild, c.SUCCESS_CHILD_REMOVED + req.body.username + '\' ');
+            console.log('Removed child from \'' + req.query.username + '\' successfully!');
+            api.buildAndSendRes(res, searchedChild, c.SUCCESS_CHILD_REMOVED +'\'' +req.query.username + '\'');
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);
@@ -213,7 +213,7 @@ exports.removeChild = function (req, res) {
 };
 
 exports.removeUser = function (req, res) {
-    User.findOneAndRemove({username: req.body.username}, function (err, user) {
+    User.findOneAndRemove({username: req.query.username}, function (err, user) {
 
         if (err) {
             api.buildAndSendRes(res, null, null, err);

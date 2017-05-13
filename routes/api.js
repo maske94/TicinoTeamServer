@@ -148,12 +148,12 @@ router.get('/getChildren', function (req, res, next) {
 router.delete('/removeChild',function (req, res, next) {
 
     // Fields validation
-    if (req.body.username === undefined) {
+    if (req.query.username === undefined) {
         buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
         return;
     }
 
-    if (req.body.childId === undefined) {
+    if (req.query.childId === undefined) {
         buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_CHILDID);
         return;
     }
@@ -170,7 +170,7 @@ router.delete('/removeChild',function (req, res, next) {
 router.delete('/removeUser',function (req, res, next) {
 
     // Fields validation
-    if (req.body.username === undefined) {
+    if (req.query.username === undefined) {
         buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
         return;
     }
