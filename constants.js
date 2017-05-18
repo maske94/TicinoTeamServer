@@ -8,9 +8,13 @@ module.exports = {
     ERROR_MISSING_FIELD_GPSLAT: 'Missed mandatory \'gpsLat\' field in the request',
     ERROR_MISSING_FIELD_GPSLONG: 'Missed mandatory \'gpsLong\' field in the request',
     ERROR_MISSING_FIELD_TIMESTAMP: 'Missed mandatory \'timeStamp\' field in the request',
+    ERROR_MISSING_FIELD_DATE_START: 'Missed mandatory \'dateStart\' field in the request',
+    ERROR_MISSING_FIELD_DATE_END: 'Missed mandatory \'dateEnd\' field in the request',
 
     // Invalid field
-    ERROR_INVALID_FIELD_TIMESTAMP :  'Filed \'timeStamp\' is not a valid ISO date format',
+    ERROR_INVALID_FIELD_TIMESTAMP :  'Field \'timeStamp\' is not a valid ISO date format',
+    ERROR_INVALID_FIELD_DATE_START :  'Field \'dateStart\' is not a valid ISO date format',
+    ERROR_INVALID_FIELD_DATE_END :  'Field \'dateEnd\' is not a valid ISO date format',
     ERROR_USERNAME_ALREADY_EXISTS :  'Username already exists',
     ERROR_USERNAME_NOT_EXIST :  'The given username does not exist',
     ERROR_DEVICE_ALREADY_PAIRED :  'The wearable device is already paired with a child',

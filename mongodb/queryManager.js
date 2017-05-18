@@ -70,7 +70,7 @@ exports.addChild = function (req, res) {
         // Save parent object into mongoDb
         user.save().then(function (doc) {
             console.log('Added child to \'' + req.body.username + '\' successfully!');
-            api.buildAndSendRes(res, child, c.SUCCESS_CHILD_ADDED +'\'' +req.body.username + '\'');
+            api.buildAndSendRes(res, child, c.SUCCESS_CHILD_ADDED + '\'' + req.body.username + '\'');
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);
@@ -119,7 +119,6 @@ exports.addEvent = function (req, res) {
         event.save().then(function (doc) {
             //console.log('Event added successfully!');
             api.buildAndSendRes(res, doc, c.SUCCESS_EVENT_ADDED);
-
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);
@@ -174,6 +173,48 @@ exports.getChildren = function (req, res) {
 
 };
 
+exports.getEvents = function (req, res) {
+    User.findOne({username: req.query.username}, function (err, user) {
+        if (err) {
+            api.buildAndSendRes(res, null, null, err);
+            return;
+        }
+
+        // If given parent username does not exist
+        if (user === null) {
+            api.buildAndSendRes(res, null, null, c.ERROR_USERNAME_NOT_EXIST);
+            return;
+        }
+
+        // Check if childId is a child of the given parent
+        var searchedChild = user.children.find(function (child) {
+            return child._id == req.query.childId;
+
+        });
+        if (searchedChild === undefined) {
+            api.buildAndSendRes(res, null, null, c.ERROR_CHILDID_NOT_EXIST + '\'' + req.query.username + '\'');
+            return;
+        }
+
+        // From here we are sure that username and childId exist, so we can query the events
+        Event.find({
+                username: req.query.username,
+                childId: req.query.childId,
+                timeStamp: {"$gte": req.query.dateStart, "$lte": req.query.dateEnd}
+            },
+            "timeStamp gpsLat gpsLong pollutionValue -_id", // Fields to be selected
+            function (err, events) {
+                if (err) {
+                    api.buildAndSendRes(res, null, null, err);
+                    return;
+                }
+                // Return the list of events
+                api.buildAndSendRes(res, events, c.SUCCESS_GENERAL, null);
+            });
+    });
+
+};
+
 exports.removeChild = function (req, res) {
     User.findOne({username: req.query.username}, function (err, user) {
         if (err) {
@@ -203,7 +244,7 @@ exports.removeChild = function (req, res) {
         // Save parent object into mongoDb
         user.save().then(function (doc) {
             console.log('Removed child from \'' + req.query.username + '\' successfully!');
-            api.buildAndSendRes(res, searchedChild, c.SUCCESS_CHILD_REMOVED +'\'' +req.query.username + '\'');
+            api.buildAndSendRes(res, searchedChild, c.SUCCESS_CHILD_REMOVED + '\'' + req.query.username + '\'');
         }).catch(function (err) {
             console.error(err);
             api.buildAndSendRes(res, null, null, err);

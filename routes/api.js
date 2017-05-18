@@ -140,12 +140,57 @@ router.get('/getChildren', function (req, res, next) {
 });
 
 /**
+ * PATH: /api/getEvents
+ * METHOD: GET
+ * PARAMS: username,childId,dateStart,dateEnd
+ * RETURN: All the events associated with the given
+ *         parent username and given childId within the
+ *         temporal range defined by dateStart and dateEnd.
+ */
+router.get('/getEvents', function (req, res, next) {
+
+    // Fields validation
+    if (req.query.username === undefined || req.query.username === "") {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_USERNAME);
+        return;
+    }
+
+    if (req.query.childId === undefined || req.query.childId === "") {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_CHILDID);
+        return;
+    }
+
+    if (req.query.dateStart === undefined || req.query.dateStart === "") {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_DATE_START);
+        return;
+    }
+
+    if (req.query.dateEnd === undefined || req.query.dateEnd === "") {
+        buildAndSendRes(res, null, null, c.ERROR_MISSING_FIELD_DATE_END);
+        return;
+    }
+
+    if (!validator.isISO8601(req.query.dateStart)) {
+        buildAndSendRes(res, null, null, c.ERROR_INVALID_FIELD_DATE_START);
+        return;
+    }
+
+    if (!validator.isISO8601(req.query.dateEnd)) {
+        buildAndSendRes(res, null, null, c.ERROR_INVALID_FIELD_DATE_END);
+        return;
+    }
+
+    queryManager.getEvents(req, res);
+});
+
+
+/**
  * PATH: /api/removeChild
  * METHOD: DELETE
  * PARAMS: username,childId
  * RETURN: The deleted child
  */
-router.delete('/removeChild',function (req, res, next) {
+router.delete('/removeChild', function (req, res, next) {
 
     // Fields validation
     if (req.query.username === undefined) {
@@ -158,7 +203,7 @@ router.delete('/removeChild',function (req, res, next) {
         return;
     }
 
-    queryManager.removeChild(req,res);
+    queryManager.removeChild(req, res);
 });
 
 /**
@@ -167,7 +212,7 @@ router.delete('/removeChild',function (req, res, next) {
  * PARAMS: username
  * RETURN: The removed user
  */
-router.delete('/removeUser',function (req, res, next) {
+router.delete('/removeUser', function (req, res, next) {
 
     // Fields validation
     if (req.query.username === undefined) {
@@ -175,7 +220,7 @@ router.delete('/removeUser',function (req, res, next) {
         return;
     }
 
-    queryManager.removeUser(req,res);
+    queryManager.removeUser(req, res);
 });
 
 /**
